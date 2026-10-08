@@ -1,0 +1,291 @@
+
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jom Main Simpulan Bahasa</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fef08a 0%, #fed7aa 50%, #fbcfe8 100%);
+            min-height: 100vh;
+        }
+        .pop-in {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .bounce-gentle {
+            animation: bounceGentle 2s infinite;
+        }
+        @keyframes bounceGentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+
+    <div id="app" class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-6 sm:p-8 border-4 border-yellow-400 relative overflow-hidden">
+        
+        <!-- Decoration elements -->
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-200 rounded-full opacity-50 pointer-events-none"></div>
+        <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-pink-200 rounded-full opacity-50 pointer-events-none"></div>
+
+        <!-- SCREEN 1: Welcome Screen -->
+        <div id="welcome-screen" class="text-center py-6">
+            <div class="inline-block bg-yellow-100 text-yellow-800 text-sm font-bold px-4 py-1.5 rounded-full mb-4 shadow-sm">
+                📚 Bahasa Melayu Tahun 4
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-amber-600 mb-4 tracking-tight drop-shadow-sm">
+                🎮 Jom Main Simpulan Bahasa
+            </h1>
+            <p class="text-gray-600 text-base sm:text-lg mb-8 max-w-md mx-auto leading-relaxed">
+                Uji minda anda dengan soalan-soalan simpulan bahasa yang menarik dan menyeronokkan!
+            </p>
+            <div class="bg-amber-50 border-2 border-dashed border-amber-300 rounded-2xl p-4 mb-8 text-amber-900 text-sm sm:text-base font-medium">
+                💡 <strong>Arahan:</strong> Pilih simpulan bahasa yang paling sesuai dengan ayat yang diberikan. Ada 10 soalan kesemuanya. Jom cuba!
+            </div>
+            <button onclick="startGame()" class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xl py-4 px-10 rounded-2xl shadow-lg transform transition active:scale-95 bounce-gentle">
+                Mula Bermain! 🚀
+            </button>
+        </div>
+
+        <!-- SCREEN 2: Quiz Screen -->
+        <div id="quiz-screen" class="hidden">
+            <!-- Header Progress & Score -->
+            <div class="flex justify-between items-center mb-6 bg-amber-50 px-4 py-3 rounded-2xl border border-amber-200">
+                <span id="question-counter" class="text-amber-800 font-bold text-sm sm:text-base">Soalan 1/10</span>
+                <span id="current-score" class="text-emerald-700 font-bold text-sm sm:text-base">⭐ Markah: 0</span>
+            </div>
+
+            <!-- Question Box -->
+            <div class="mb-6">
+                <h2 id="question-text" class="text-lg sm:text-2xl font-bold text-gray-800 leading-relaxed mb-4">
+                    <!-- Soalan akan dipaparkan di sini -->
+                </h2>
+                <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="bg-amber-500 h-full transition-all duration-300" style="width: 10%;"></div>
+                </div>
+            </div>
+
+            <!-- Options Container -->
+            <div id="options-container" class="space-y-3 mb-6">
+                <!-- Pilihan jawapan -->
+            </div>
+
+            <!-- Feedback & Explanation Box (Hidden initially) -->
+            <div id="feedback-box" class="hidden rounded-2xl p-4 mb-6 pop-in">
+                <div id="feedback-title" class="font-extrabold text-lg mb-1"></div>
+                <div id="feedback-explanation" class="text-sm sm:text-base"></div>
+            </div>
+
+            <!-- Next Button (Hidden initially until answered) -->
+            <button id="next-btn" onclick="nextQuestion()" class="hidden w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg py-3 px-6 rounded-2xl shadow-md transition transform active:scale-95">
+                Soalan Seterusnya ➔
+            </button>
+        </div>
+
+        <!-- SCREEN 3: Result Screen -->
+        <div id="result-screen" class="hidden text-center py-6 pop-in">
+            <div class="text-6xl mb-4">🏆</div>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-2">Tahniah!</h2>
+            <p class="text-gray-600 mb-6">Anda telah berjaya menjawab semua soalan simpulan bahasa.</p>
+            
+            <div class="bg-yellow-50 border-2 border-yellow-300 rounded-3xl p-6 mb-6 max-w-xs mx-auto shadow-inner">
+                <div class="text-sm text-yellow-800 font-semibold mb-1">Jumlah Markah Anda</div>
+                <div id="final-score" class="text-4xl sm:text-5xl font-extrabold text-amber-600">0 / 10</div>
+            </div>
+
+            <div id="achievement-message" class="text-lg font-bold text-indigo-700 mb-8 px-4">
+                <!-- Mesej pencapaian -->
+            </div>
+
+            <button onclick="restartGame()" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-xl py-4 px-10 rounded-2xl shadow-lg transform transition active:scale-95">
+                Main Semula 🔄
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Senarai Soalan Simpulan Bahasa Tahun 4
+        const questions = [
+            {
+                question: "Selepas menolong ibu mengemas rumah tanpa disuruh, Ali dipuji kerana dia seorang yang ________.",
+                options: ["ringan tulang", "kaki ayam", "buah hati"],
+                answer: "ringan tulang",
+                explanation: "Maksud **ringan tulang** ialah rajin membantu atau bekerja."
+            },
+            {
+                question: "Ibu sangat menyayangi adik kerana adik ialah ________ ibu.",
+                options: ["buah hati", "panjang tangan", "kaki bangku"],
+                answer: "buah hati",
+                explanation: "Maksud **buah hati** ialah orang yang sangat disayangi."
+            },
+            {
+                question: "Amir masuk ke dalam rumah tanpa memakai kasut selepas bermain di luar. Amir berjalan ________.",
+                options: ["kaki ayam", "ringan tulang", "makan angin"],
+                answer: "kaki ayam",
+                explanation: "Maksud **kaki ayam** ialah tidak memakai kasut atau berselipar."
+            },
+            {
+                question: "Siti suka membantu gurunya membawa buku kerana dia ________.",
+                options: ["ringan tulang", "besar kepala", "panjang tangan"],
+                answer: "ringan tulang",
+                explanation: "Maksud **ringan tulang** ialah rajin membantu."
+            },
+            {
+                question: "Adik sangat disayangi oleh ayah kerana adik merupakan ________ ayah.",
+                options: ["buah hati", "kaki bangku", "panjang tangan"],
+                answer: "buah hati",
+                explanation: "Maksud **buah hati** ialah orang yang sangat disayangi."
+            },
+            {
+                question: "Murid itu mengambil pensel kawannya tanpa izin. Dia dikatakan ________.",
+                options: ["panjang tangan", "ringan tulang", "kaki ayam"],
+                answer: "panjang tangan",
+                explanation: "Maksud **panjang tangan** ialah suka mengambil barang orang lain."
+            },
+            {
+                question: "Hakim tidak pandai bermain bola kerana dia ________.",
+                options: ["kaki bangku", "buah hati", "ringan tulang"],
+                answer: "kaki bangku",
+                explanation: "Maksud **kaki bangku** ialah tidak pandai bermain bola."
+            },
+            {
+                question: "Selepas penat belajar, keluarga itu pergi bercuti untuk ________.",
+                options: ["makan angin", "panjang tangan", "kaki ayam"],
+                answer: "makan angin",
+                explanation: "Maksud **makan angin** ialah pergi bersiar-siar atau bercuti."
+            },
+            {
+                question: "Walaupun banyak kerja di rumah, Aina tetap membantu ibunya. Aina memang ________.",
+                options: ["ringan tulang", "kaki bangku", "besar kepala"],
+                answer: "ringan tulang",
+                explanation: "Maksud **ringan tulang** ialah rajin membantu."
+            },
+            {
+                question: "Danial mengambil pemadam rakannya tanpa meminta izin. Danial mempunyai sikap ________.",
+                options: ["panjang tangan", "makan angin", "buah hati"],
+                answer: "panjang tangan",
+                explanation: "Maksud **panjang tangan** ialah suka mengambil barang orang lain."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let isAnswered = false;
+
+        // Stream Chunk Indicator helper simulation
+        function startGame() {
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            currentQuestionIndex = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            isAnswered = false;
+            const q = questions[currentQuestionIndex];
+            
+            // Kemaskini kaunter & progress bar
+            document.getElementById('question-counter').innerText = `Soalan ${currentQuestionIndex + 1}/10`;
+            document.getElementById('current-score').innerText = `⭐ Markah: ${score}`;
+            document.getElementById('question-text').innerText = q.question;
+            
+            const progressPercent = ((currentQuestionIndex + 1) / 10) * 100;
+            document.getElementById('progress-bar').style.width = progressPercent + '%';
+
+            // Sembunyikan kotak maklum balas & butang seterusnya
+            const feedbackBox = document.getElementById('feedback-box');
+            feedbackBox.classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+
+            // Papar pilihan jawapan
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((option) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-2xl border-2 border-gray-200 hover:border-amber-400 hover:bg-amber-50 font-semibold text-gray-700 text-base sm:text-lg transition shadow-sm active:scale-98 flex items-center justify-between";
+                btn.innerHTML = `<span>${option}</span> <span class="text-gray-300">➔</span>`;
+                btn.onclick = () => selectAnswer(option, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectAnswer(selectedOption, selectedBtn) {
+            if (isAnswered) return;
+            isAnswered = true;
+
+            const q = questions[currentQuestionIndex];
+            const feedbackBox = document.getElementById('feedback-box');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackExplanation = document.getElementById('feedback-explanation');
+            const allOptionButtons = document.getElementById('options-container').querySelectorAll('button');
+
+            // Nyahaktifkan semua butang pilihan
+            allOptionButtons.forEach(btn => {
+                btn.disabled = true;
+                const textSpan = btn.querySelector('span').innerText;
+                if (textSpan === q.answer) {
+                    btn.className = "w-full text-left p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50 font-semibold text-emerald-800 text-base sm:text-lg shadow-sm flex items-center justify-between";
+                }
+            });
+
+            if (selectedOption === q.answer) {
+                score++;
+                selectedBtn.className = "w-full text-left p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-100 font-semibold text-emerald-900 text-base sm:text-lg shadow-sm flex items-center justify-between";
+                feedbackBox.className = "rounded-2xl p-4 mb-6 bg-emerald-100 border-2 border-emerald-400 text-emerald-900 pop-in";
+                feedbackTitle.innerHTML = "✅ Betul!";
+            } else {
+                selectedBtn.className = "w-full text-left p-4 rounded-2xl border-2 border-rose-500 bg-rose-100 font-semibold text-rose-900 text-base sm:text-lg shadow-sm flex items-center justify-between";
+                feedbackBox.className = "rounded-2xl p-4 mb-6 bg-rose-100 border-2 border-rose-400 text-rose-900 pop-in";
+                feedbackTitle.innerHTML = "❌ Belum tepat, cuba lagi!";
+            }
+
+            feedbackExplanation.innerHTML = q.explanation;
+            document.getElementById('current-score').innerText = `⭐ Markah: ${score}`;
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = `${score} / 10`;
+
+            const messageEl = document.getElementById('achievement-message');
+            if (score === 10) {
+                messageEl.innerHTML = "🌟 Syabas! Anda Cemerlang! Pakar Simpulan Bahasa Sejati! 🌟";
+            } else if (score >= 7) {
+                messageEl.innerHTML = "👏 Bagus Sekali! Keputusan yang sangat memuaskan!";
+            } else if (score >= 4) {
+                messageEl.innerHTML = "👍 Usaha yang baik! Boleh cuba lagi untuk lebih cemerlang.";
+            } else {
+                messageEl.innerHTML = "💪 Jangan berputus asa! Cuba ulang semula ya!";
+            }
+        }
+
+        function restartGame() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('welcome-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
